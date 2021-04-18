@@ -27,6 +27,8 @@ Hacker chat is an http service that works with websockets. It allows users to cr
 
 It is possible to create any interface to communicate with it, web, mobile, desktop, etc.
 
+The socket is created without any third-party lib like <a href="https://socket.io/">Socket.io</a>, the only dependenciy is uuid, mainly for unique socket communications.
+
 ---
 
 Made with ❤️ by Redstone Solutions :wave: [Join our community!](https://discord.gg/SNQXH5cKEB)
