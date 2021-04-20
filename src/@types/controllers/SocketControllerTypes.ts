@@ -1,6 +1,5 @@
 import SocketServer from '../../server/SocketServer'
 import * as SocketServerTypes from '../server/SocketServerTypes'
-import Http from 'http'
 
 export type SocketServerInstance = {
   socketServer: SocketServer
@@ -18,5 +17,5 @@ export type User = {
   id: string,
   roomId?: string,
   userName?: string,
-  socket: Http.Server
+  socket: NodeJS.Socket
 }

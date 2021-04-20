@@ -18,16 +18,16 @@ export default class SocketServer {
   /**
    * Write the message on the socket.
    *
-   * @param {any} socket
+   * @param {NodeJS.Socket} socket
    * @param {string} event
    * @param {Types.SocketMessage} message
    * @returns {Promise<void>} promise
    */
   async sendMessage(
-    socket: any,
+    socket: NodeJS.Socket,
     event: string,
-    message: Types.SocketMessage | unknown[]
-  ): Promise<void> {
+    message: Types.SocketMessage
+  ) {
     const data = JSON.stringify({ event, message })
     socket.write(`${data}\n`)
   }
@@ -39,7 +39,7 @@ export default class SocketServer {
    * @returns {Promise<http.Server>} server
    */
   async initialize(eventEmitter: NodeJS.EventEmitter): Promise<http.Server> {
-    const server = http.createServer((request, response) => {
+    const server = http.createServer((request: http.IncomingMessage, response: http.ServerResponse) => {
       response.writeHead(200, { 'Content-Type': 'text/plain' })
       response.end('Hacker chat server is running!\n\nPlease connect with websocket protocol.')
     })
