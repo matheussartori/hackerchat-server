@@ -62,8 +62,8 @@ export default class Controller {
     this.broadcast({
       socketId,
       roomId: String(roomId),
-      message: { id: socketId, userName: userData.userName },
       event: EventTypes.event.NEW_USER_CONNECTED,
+      message: { id: socketId, userName: userData.userName },
       includeCurrentSocket: true
     })
   }
