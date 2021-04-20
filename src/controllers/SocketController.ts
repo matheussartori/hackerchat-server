@@ -1,6 +1,5 @@
 import { EventTypes } from '../events/Events'
 import * as Types from '../@types/controllers/SocketControllerTypes'
-import Http from 'http'
 
 export default class Controller {
   public socketServer
@@ -22,8 +21,8 @@ export default class Controller {
    *
    * @param {Http.Server} socket
    */
-  onConnectionCreated(socket: Http.Server) {
-    // @ts-ignore
+  onConnectionCreated(socket: NodeJS.Socket) {
+    // @ts-expect-error
     const { id } = socket
     console.log('Connection stablished with ', id)
     const userData = { id, socket }
@@ -39,8 +38,9 @@ export default class Controller {
    *
    * @param {string} socketId
    * @param {Types.User} data
+   * @returns {Promise<void>}
    */
-  async joinRoom(socketId: string, data: Types.User) {
+  async joinRoom(socketId: string, data: Types.User): Promise<void> {
     const userData = data
     console.log(`${userData.userName} joined! ${[socketId]}`)
     const { roomId } = userData
@@ -52,9 +52,10 @@ export default class Controller {
       id
     }))
 
-    await this.socketServer.sendMessage(
+    this.socketServer.sendMessage(
       user.socket,
       EventTypes.event.UPDATE_USERS,
+      // @ts-expect-error
       currentUsers
     )
 
@@ -83,7 +84,6 @@ export default class Controller {
 
     for (const [key, user] of usersOnRoom) {
       if (!includeCurrentSocket && key === socketId) continue
-
       this.socketServer.sendMessage(user.socket, event, message)
     }
   }
@@ -125,9 +125,9 @@ export default class Controller {
    * Socket data handler.
    *
    * @param {string} id
-   * @returns
+   * @returns {(data: string) => void}
    */
-  private onSocketData(id: string) {
+  private onSocketData(id: string): (data: string) => void {
     return (data: string) => {
       try {
         const { event, message } = JSON.parse(data)
@@ -144,6 +144,7 @@ export default class Controller {
    *
    * @param {string} id
    * @param {string} roomId
+   * @returns {void}
    */
   private logoutUser(id: string, roomId: string): void {
     this.users.delete(id)
@@ -157,8 +158,9 @@ export default class Controller {
    * Handle the socket end.
    *
    * @param {string} id
+   * @returns {(_: Promise<void>) => void}
    */
-  private onSocketClosed(id: string) {
+  private onSocketClosed(id: string): (_: Promise<void>) => void {
     return (_: Promise<void>) => {
       const { userName, roomId } = this.users.get(id)
       console.log(userName, 'disconnected', id)
@@ -180,7 +182,10 @@ export default class Controller {
    * @param {Types.User} userData
    * @returns {Types.User} updatedUserData
    */
-  private updateGlobalUserData(socketId: string, userData: Types.User): Types.User {
+  private updateGlobalUserData(
+    socketId: string,
+    userData: Types.User
+  ): Types.User {
     const users = this.users
     const user = users.get(socketId) ?? {}
 
