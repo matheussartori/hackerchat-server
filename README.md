@@ -18,8 +18,8 @@
 </p>
 
 <p align="center">
-  <a href="#about-the-project">About the project</a>
-  <a href="#installation">Installation</a>
+  <a href="#about-the-project">About the project</a><br>
+  <a href="#installation">Installation</a><br>
   <a href="#starting-a-server">Starting a server</a>
 </p>
 
@@ -35,7 +35,7 @@ The socket is created without any third-party lib like <a href="https://socket.i
 
 To run the server, you need to install the node dependencies, and a node engine version 15 or above. To install the modules:
 
-```
+```bash
 npm install
 ```
 
@@ -43,7 +43,7 @@ npm install
 
 To start a server, you can specify the port on the NODE_ENV PORT, for example, on linux:
 
-```
+```bash
 PORT=3000 npm run start
 ```
 
