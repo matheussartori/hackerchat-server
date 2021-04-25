@@ -1,6 +1,6 @@
 {
   "name": "hackerchat-server",
-  "version": "1.0.0",
+  "version": "alpha0.0.1",
   "description": "Http server for websocket chatting.",
   "main": "dist/index.js",
   "scripts": {
