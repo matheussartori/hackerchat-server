@@ -9,7 +9,7 @@
     "dev": "nodemon --watch 'src/' --exec \"ts-node src/index.ts\" -e ts"
   },
   "engines": {
-    "node": "15"
+    "node": ">=15"
   },
   "keywords": [
     "chat",
