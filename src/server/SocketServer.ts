@@ -40,6 +40,11 @@ export default class SocketServer {
    */
   async initialize(eventEmitter: NodeJS.EventEmitter): Promise<http.Server> {
     const server = http.createServer((request: http.IncomingMessage, response: http.ServerResponse) => {
+      response.setHeader('Access-Control-Allow-Origin', '*');
+      response.setHeader('Access-Control-Request-Method', '*');
+      response.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET');
+      response.setHeader('Access-Control-Allow-Headers', '*');
+      
       response.writeHead(200, { 'Content-Type': 'text/plain' })
       response.end('Hacker chat server is running!\n\nPlease connect with websocket protocol.')
     })
