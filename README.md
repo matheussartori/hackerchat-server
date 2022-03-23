@@ -50,5 +50,3 @@ PORT=3000 npm run start
 Since this project uses <a href="https://www.typescriptlang.org/" target="_blank">TypeScript</a>, you need to run "npm run build" before "npm run start", or you can simply run "npm run dev" to run the project with <a href="https://www.npmjs.com/package/ts-node" target="_blank">ts-node</a> on the src folder.
 
 ---
-
-Made with ❤️ by Redstone Solutions :wave: [Join our community!](https://discord.gg/SNQXH5cKEB)
