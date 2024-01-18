@@ -1,14 +1,14 @@
-export type SocketServerSettings = {
+export interface SocketServerSettings {
   port: number
 }
 
-export type SocketSendMessage = {
-  socket: any
+export interface SocketSendMessage {
+  socket: NodeJS.Socket
   event: string
   message: string
 }
 
-export type SocketMessage = {
+export interface SocketMessage {
   id?: string
   userName?: string
   message?: string

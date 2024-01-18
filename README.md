@@ -1,12 +1,12 @@
 <p align="center">
-  <img alt="Hackerchat Server" height="350" src="./assets/hackerchat.svg" />
+  <img alt="Hackerchat Server" height="350" src=".github/assets/hackerchat.svg" />
 </p>
 
 <h3 align="center">
   Hackerchat Server
 </h3>
 
-<blockquote align="center">"This software is a continued idea of the project created by Erick Wendel."</blockquote>
+<blockquote align="center">Chat service built using websockets, designed to accommodate clients connecting from various client types.</blockquote>
 <br>
 
 <p align="center">

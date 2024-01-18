@@ -1,18 +1,19 @@
 import { EventTypes } from '../events/Events'
-import * as Types from '../@types/controllers/SocketControllerTypes'
+import type * as Types from '../@types/controllers/SocketControllerTypes'
+import { type SocketMessage } from '../@types/server/SocketServerTypes'
 
 export default class Controller {
   public socketServer
 
-  private users = new Map()
-  private rooms = new Map()
+  private readonly users = new Map()
+  private readonly rooms = new Map()
 
   /**
    * Controller constructor.
    *
    * @param {{ socketServer: string }} params
    */
-  constructor({ socketServer }: Types.SocketServerInstance) {
+  constructor ({ socketServer }: Types.SocketServerInstance) {
     this.socketServer = socketServer
   }
 
@@ -21,8 +22,7 @@ export default class Controller {
    *
    * @param {Http.Server} socket
    */
-  onConnectionCreated(socket: NodeJS.Socket) {
-    // @ts-expect-error
+  onConnectionCreated (socket: NodeJS.Socket & { id: string }): void {
     const { id } = socket
     console.log('Connection stablished with ', id)
     const userData = { id, socket }
@@ -40,22 +40,20 @@ export default class Controller {
    * @param {Types.User} data
    * @returns {Promise<void>}
    */
-  async joinRoom(socketId: string, data: Types.User): Promise<void> {
+  async joinRoom (socketId: string, data: Types.User): Promise<void> {
     const userData = data
-    console.log(`${userData.userName} joined! ${[socketId]}`)
+    console.log(`${userData.userName} joined! [${socketId}]`)
     const { roomId } = userData
     const user = this.updateGlobalUserData(socketId, userData)
     const users = this.joinUserOnRoom(String(roomId), user)
-    // @ts-ignore
     const currentUsers = Array.from(users.values()).map(({ id, userName }) => ({
       userName,
       id
-    }))
+    })) as SocketMessage
 
-    this.socketServer.sendMessage(
+    void this.socketServer.sendMessage(
       user.socket,
       EventTypes.event.UPDATE_USERS,
-      // @ts-expect-error
       currentUsers
     )
 
@@ -73,7 +71,7 @@ export default class Controller {
    *
    * @param {Types.Broadcast} broadcast
    */
-  broadcast({
+  broadcast ({
     socketId,
     roomId,
     event,
@@ -84,7 +82,7 @@ export default class Controller {
 
     for (const [key, user] of usersOnRoom) {
       if (!includeCurrentSocket && key === socketId) continue
-      this.socketServer.sendMessage(user.socket, event, message)
+      void this.socketServer.sendMessage(user.socket as NodeJS.Socket, event, message)
     }
   }
 
@@ -94,7 +92,7 @@ export default class Controller {
    * @param {string} socketId
    * @param {string} message
    */
-  message(socketId: string, message: string): void {
+  message (socketId: string, message: string): void {
     const { userName, roomId } = this.users.get(socketId)
 
     this.broadcast({
@@ -113,7 +111,7 @@ export default class Controller {
    * @param {object} user
    * @returns
    */
-  private joinUserOnRoom(roomId: string, user: Types.User): [] {
+  private joinUserOnRoom (roomId: string, user: Types.User): [] {
     const usersOnRoom = this.rooms.get(roomId) ?? new Map()
     usersOnRoom.set(user.id, user)
     this.rooms.set(roomId, usersOnRoom)
@@ -127,12 +125,11 @@ export default class Controller {
    * @param {string} id
    * @returns {(data: string) => void}
    */
-  private onSocketData(id: string): (data: string) => void {
+  private onSocketData (id: string): (data: string) => void {
     return (data: string) => {
       try {
-        const { event, message } = JSON.parse(data)
-        // @ts-ignore
-        this[event](id, message)
+        const { event, message } = JSON.parse(data);
+        (this as any)[event](id, message)
       } catch (error) {
         console.error('Wrong event format.', data.toString())
       }
@@ -146,7 +143,7 @@ export default class Controller {
    * @param {string} roomId
    * @returns {void}
    */
-  private logoutUser(id: string, roomId: string): void {
+  private logoutUser (id: string, roomId: string): void {
     this.users.delete(id)
     const usersOnRoom = this.rooms.get(roomId)
     usersOnRoom.delete(id)
@@ -160,11 +157,11 @@ export default class Controller {
    * @param {string} id
    * @returns {(_: Promise<void>) => void}
    */
-  private onSocketClosed(id: string): (_: Promise<void>) => void {
+  private onSocketClosed (id: string): (_: Promise<void>) => void {
     return (_: Promise<void>) => {
       const { userName, roomId } = this.users.get(id)
       console.log(userName, 'disconnected', id)
-      this.logoutUser(id, roomId)
+      this.logoutUser(id, roomId as string)
 
       this.broadcast({
         socketId: id,
@@ -182,7 +179,7 @@ export default class Controller {
    * @param {Types.User} userData
    * @returns {Types.User} updatedUserData
    */
-  private updateGlobalUserData(
+  private updateGlobalUserData (
     socketId: string,
     userData: Types.User
   ): Types.User {

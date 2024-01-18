@@ -5,7 +5,7 @@ import Controller from './controllers/SocketController'
 
 const eventEmitter = new Event()
 
-const port = Number(process.env.PORT) || 9898
+const port = process.env.PORT !== null ? Number(process.env.PORT) : 9898
 const socketServer = new SocketServer({ port })
 
 socketServer.initialize(eventEmitter)
