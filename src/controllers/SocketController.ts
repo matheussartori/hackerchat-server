@@ -1,6 +1,10 @@
 import { EventTypes } from '../events/Events'
 import type * as Types from '../@types/controllers/SocketControllerTypes'
 import { type SocketMessage } from '../@types/server/SocketServerTypes'
+import chalk from 'chalk'
+
+const log = (...text: any): void => { console.log(chalk.green('[Socket Controller]'), ...text) }
+const error = (...text: any): void => { console.error(chalk.yellow('[Socket Controller]'), [...text]) }
 
 export default class Controller {
   public socketServer
@@ -24,7 +28,7 @@ export default class Controller {
    */
   onConnectionCreated (socket: NodeJS.Socket & { id: string }): void {
     const { id } = socket
-    console.log('Connection stablished with ', id)
+    log('Connection stablished with', id)
     const userData = { id, socket }
     this.updateGlobalUserData(id, userData)
 
@@ -42,7 +46,7 @@ export default class Controller {
    */
   async joinRoom (socketId: string, data: Types.User): Promise<void> {
     const userData = data
-    console.log(`${userData.userName} joined! [${socketId}]`)
+    log(`${userData.userName} joined [${socketId}]`)
     const { roomId } = userData
     const user = this.updateGlobalUserData(socketId, userData)
     const users = this.joinUserOnRoom(String(roomId), user)
@@ -130,8 +134,8 @@ export default class Controller {
       try {
         const { event, message } = JSON.parse(data);
         (this as any)[event](id, message)
-      } catch (error) {
-        console.error('Wrong event format.', data.toString())
+      } catch (err) {
+        error('Wrong event format.', data.toString())
       }
     }
   }
@@ -160,7 +164,7 @@ export default class Controller {
   private onSocketClosed (id: string): (_: Promise<void>) => void {
     return (_: Promise<void>) => {
       const { userName, roomId } = this.users.get(id)
-      console.log(userName, 'disconnected', id)
+      log(userName, 'disconnected', id)
       this.logoutUser(id, roomId as string)
 
       this.broadcast({
