@@ -1,5 +1,5 @@
 <p align="center">
-  <img alt="Hackerchat Server" height="350" src=".github/assets/hackerchat.svg" />
+  <img alt="Hackerchat Server" height="350" src=".github/assets/demo.gif" />
 </p>
 
 <h3 align="center">
@@ -10,30 +10,23 @@
 <br>
 
 <p align="center">
-  <a href="https://redstonesolutions.com.br">
-    <img alt="Made by Matheus Sartori" src="https://img.shields.io/badge/made%20by-Matheus%20Sartori-%2304D361">
-  </a>
-
-  <img alt="License" src="https://img.shields.io/badge/license-MIT-%2304D361">
-</p>
-
-<p align="center">
   <a href="#about-the-project">About the project</a><br>
   <a href="#installation">Installation</a><br>
   <a href="#starting-a-server">Starting a server</a>
+  <a href="#deploying-a-server">Deploying a server</a>
 </p>
 
 ## About the project
 
-Hacker chat is a http service that works with websockets. It allows users to create and connect in rooms and change messages.
+Hackerchat is an HTTP service that operates with websockets, enabling users to create and join rooms to exchange messages.
 
-It is possible to create any interface to communicate with it, web, mobile, desktop, etc.
+It is adaptable to various interfaces, including web, mobile, desktop, and more. As demonstrated in the gif, I utilized a simple terminal interface to interact with the server.
 
-The socket is created without any third-party lib like <a href="https://socket.io/" target="_blank">Socket.io</a>, the only dependency is <a href="https://www.npmjs.com/package/uuid" target="_blank">uuid</a>, mainly for unique socket communications.
+The Hackerchat server exclusively manages backend communications and lacks a built-in frontend interface. However, users have the flexibility to develop their own interface or choose from existing options provided in this project, such as the <a href="https://github.com/matheussartori/hackerchat-terminal-client">terminal client</a>
 
 ### Installation
 
-To run the server, you need to install the node dependencies, and a node engine version 15 or above. To install the modules:
+To launch the server, you must install the Node dependencies and ensure a Node engine version of 20 or higher. To install the modules:
 
 ```bash
 npm install
@@ -41,12 +34,44 @@ npm install
 
 ### Starting a server
 
-To start a server, you can specify the port on the NODE_ENV PORT, for example, on linux:
+To initiate a server, you can specify the port using the `PORT` environment variable, for instance, on Linux:
 
 ```bash
-PORT=3000 npm run start
+PORT=3000 npm run dev
 ```
 
-Since this project uses <a href="https://www.typescriptlang.org/" target="_blank">TypeScript</a>, you need to run "npm run build" before "npm run start", or you can simply run "npm run dev" to run the project with <a href="https://www.npmjs.com/package/ts-node" target="_blank">ts-node</a> on the src folder.
+Since this project uses TypeScript, you need to run `npm run build` before `npm start`, or you can simply run `npm run dev` to run the project with <a href="https://www.npmjs.com/package/ts-node" target="_blank">ts-node</a> on the src folder.
 
----
+### Deploying a server
+
+To deploy the Hackerchat application, follow these steps:
+
+1. Ensure Node.js Compatibility:
+
+Make sure your server environment supports Node.js version 20 or higher.
+Confirm that the server is capable of handling WebSocket connections.
+
+2. Clone the Repository:
+
+```
+git clone git@github.com:matheussartori/hackerchat-server.git
+```
+
+3. Navigate to Project Directory:
+
+```
+cd hackerchat-server
+```
+
+4. Install the required dependencies using npm:
+
+```
+npm install
+```
+
+5. Initiate the Hackerchat server by running:
+```
+npm run build && PORT=3000 npm start
+```
+
+Your Hackerchat application is now deployed and ready for use.
