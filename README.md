@@ -12,7 +12,7 @@
 <p align="center">
   <a href="#about-the-project">About the project</a><br>
   <a href="#installation">Installation</a><br>
-  <a href="#starting-a-server">Starting a server</a>
+  <a href="#starting-a-server">Starting a server</a><br>
   <a href="#deploying-a-server">Deploying a server</a>
 </p>
 
