@@ -22,7 +22,7 @@ Hackerchat is an HTTP service that operates with websockets, enabling users to c
 
 It is adaptable to various interfaces, including web, mobile, desktop, and more. As demonstrated in the gif, I utilized a simple terminal interface to interact with the server.
 
-The Hackerchat server exclusively manages backend communications and lacks a built-in frontend interface. However, users have the flexibility to develop their own interface or choose from existing options provided in this project, such as the <a href="https://github.com/matheussartori/hackerchat-terminal-client">terminal client</a>
+The Hackerchat server exclusively manages backend communications and lacks a built-in frontend interface. However, users have the flexibility to develop their own interface or choose from existing options provided in this project, such as the <a href="https://github.com/matheussartori/hackerchat-terminal-client">terminal client</a>.
 
 ### Installation
 
