@@ -1,11 +1,11 @@
-import SocketServer from '../../server/SocketServer'
-import * as SocketServerTypes from '../server/SocketServerTypes'
+import type SocketServer from '../../server/SocketServer'
+import type * as SocketServerTypes from '../server/SocketServerTypes'
 
-export type SocketServerInstance = {
+export interface SocketServerInstance {
   socketServer: SocketServer
 }
 
-export type Broadcast = {
+export interface Broadcast {
   socketId: string
   roomId: string
   event: string
@@ -13,9 +13,9 @@ export type Broadcast = {
   includeCurrentSocket?: boolean
 }
 
-export type User = {
-  id: string,
-  roomId?: string,
-  userName?: string,
+export interface User {
+  id: string
+  roomId?: string
+  userName?: string
   socket: NodeJS.Socket
 }

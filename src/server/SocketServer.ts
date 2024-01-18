@@ -1,7 +1,7 @@
 import http from 'http'
-import { v4 as uuid } from 'uuid'
+import { randomUUID } from 'node:crypto'
 import { EventTypes } from '../events/Events'
-import * as Types from '../@types/server/SocketServerTypes'
+import type * as Types from '../@types/server/SocketServerTypes'
 
 export default class SocketServer {
   public port: number
@@ -11,7 +11,7 @@ export default class SocketServer {
    *
    * @param {Types.SocketServerSettings} SocketServerSettings
    */
-  constructor({ port }: Types.SocketServerSettings) {
+  constructor ({ port }: Types.SocketServerSettings) {
     this.port = port
   }
 
@@ -23,11 +23,11 @@ export default class SocketServer {
    * @param {Types.SocketMessage} message
    * @returns {Promise<void>} promise
    */
-  async sendMessage(
+  async sendMessage (
     socket: NodeJS.Socket,
     event: string,
     message: Types.SocketMessage
-  ) {
+  ): Promise<void> {
     const data = JSON.stringify({ event, message })
     socket.write(`${data}\n`)
   }
@@ -38,19 +38,19 @@ export default class SocketServer {
    * @param {NodeJS.EventEmitter} eventEmitter
    * @returns {Promise<http.Server>} server
    */
-  async initialize(eventEmitter: NodeJS.EventEmitter): Promise<http.Server> {
+  async initialize (eventEmitter: NodeJS.EventEmitter): Promise<http.Server> {
     const server = http.createServer((request: http.IncomingMessage, response: http.ServerResponse) => {
-      response.setHeader('Access-Control-Allow-Origin', '*');
-      response.setHeader('Access-Control-Request-Method', '*');
-      response.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET');
-      response.setHeader('Access-Control-Allow-Headers', '*');
-      
+      response.setHeader('Access-Control-Allow-Origin', '*')
+      response.setHeader('Access-Control-Request-Method', '*')
+      response.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET')
+      response.setHeader('Access-Control-Allow-Headers', '*')
+
       response.writeHead(200, { 'Content-Type': 'text/plain' })
       response.end('Hacker chat server is running!\n\nPlease connect with websocket protocol.')
     })
 
-    server.on('upgrade', (request, socket) => {
-      socket.id = uuid()
+    server.on('upgrade', (request, socket: NodeJS.Socket & { id?: string }) => {
+      socket.id = randomUUID()
       const headers = [
         'HTTP/1.1 101 Web Socket Protocol Handshake',
         'Upgrade: WebSocket',
@@ -64,9 +64,9 @@ export default class SocketServer {
       eventEmitter.emit(EventTypes.event.NEW_USER_CONNECTED, socket)
     })
 
-    return new Promise((resolve, reject) => {
+    return await new Promise((resolve, reject) => {
       server.on('error', reject)
-      server.listen(this.port, () => resolve(server))
+      server.listen(this.port, () => { resolve(server) })
     })
   }
 }
