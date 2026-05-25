@@ -1,16 +1,16 @@
-import SocketServer from './server/SocketServer'
-import Event from 'events'
-import { EventTypes } from './events/Events'
-import Controller from './controllers/SocketController'
-import chalk from 'chalk'
+import SocketServer from './server/SocketServer.js'
+import Event from 'node:events'
+import { EventTypes } from './events/Events.js'
+import Controller from './controllers/SocketController.js'
+import pc from 'picocolors'
 
 const eventEmitter = new Event()
 
-const port = process.env.PORT !== null ? Number(process.env.PORT) : 9898
+const port = process.env.PORT !== undefined ? Number(process.env.PORT) : 9898
 const socketServer = new SocketServer({ port })
 
-const log = (...text: any): void => { console.log(chalk.blue('[Socket Server]'), ...text) }
-const error = (...text: any): void => { console.error(chalk.blue('[Socket Server]'), [...text]) }
+const log = (...text: unknown[]): void => { console.log(pc.blue('[Socket Server]'), ...text) }
+const error = (...text: unknown[]): void => { console.error(pc.blue('[Socket Server]'), ...text) }
 
 socketServer.initialize(eventEmitter)
   .then(() => {

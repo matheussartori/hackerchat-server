@@ -1,5 +1,5 @@
-import type SocketServer from '../../server/SocketServer'
-import type * as SocketServerTypes from '../server/SocketServerTypes'
+import type SocketServer from '../../server/SocketServer.js'
+import type * as SocketServerTypes from '../server/SocketServerTypes.js'
 
 export interface SocketServerInstance {
   socketServer: SocketServer

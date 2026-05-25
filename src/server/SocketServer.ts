@@ -1,28 +1,15 @@
-import http from 'http'
+import http from 'node:http'
 import { randomUUID } from 'node:crypto'
-import { EventTypes } from '../events/Events'
-import type * as Types from '../@types/server/SocketServerTypes'
+import { EventTypes } from '../events/Events.js'
+import type * as Types from '../@types/server/SocketServerTypes.js'
 
 export default class SocketServer {
   public port: number
 
-  /**
-   * Socket server constructor.
-   *
-   * @param {Types.SocketServerSettings} SocketServerSettings
-   */
   constructor ({ port }: Types.SocketServerSettings) {
     this.port = port
   }
 
-  /**
-   * Write the message on the socket.
-   *
-   * @param {NodeJS.Socket} socket
-   * @param {string} event
-   * @param {Types.SocketMessage} message
-   * @returns {Promise<void>} promise
-   */
   async sendMessage (
     socket: NodeJS.Socket,
     event: string,
@@ -32,12 +19,6 @@ export default class SocketServer {
     socket.write(`${data}\n`)
   }
 
-  /**
-   * Initialize the socket server.
-   *
-   * @param {NodeJS.EventEmitter} eventEmitter
-   * @returns {Promise<http.Server>} server
-   */
   async initialize (eventEmitter: NodeJS.EventEmitter): Promise<http.Server> {
     const server = http.createServer((request: http.IncomingMessage, response: http.ServerResponse) => {
       response.setHeader('Access-Control-Allow-Origin', '*')

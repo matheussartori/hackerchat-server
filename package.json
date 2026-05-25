@@ -2,11 +2,13 @@
   "name": "hackerchat-server",
   "version": "1.0.0",
   "description": "Chat service built using websockets, designed to accommodate clients connecting from various client types.",
+  "type": "module",
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
-    "start": "node dist/",
-    "dev": "nodemon --watch 'src/' --exec \"ts-node src/index.ts\" -e ts"
+    "start": "node dist/index.js",
+    "dev": "tsx watch src/index.ts",
+    "lint": "eslint src/"
   },
   "engines": {
     "node": ">=20"
@@ -21,18 +23,16 @@
   "author": "Matheus Sartori",
   "license": "MIT",
   "devDependencies": {
-    "@types/node": "^20.11.5",
-    "@typescript-eslint/eslint-plugin": "^6.19.0",
-    "eslint": "^8.56.0",
-    "eslint-config-standard-with-typescript": "^43.0.0",
-    "eslint-plugin-import": "^2.29.1",
-    "eslint-plugin-n": "^16.6.2",
-    "eslint-plugin-promise": "^6.1.1",
-    "nodemon": "^3.0.3",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.3.3"
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^22.15.0",
+    "eslint": "^10.4.0",
+    "eslint-plugin-n": "^18.0.1",
+    "eslint-plugin-promise": "^7.3.0",
+    "tsx": "^4.22.3",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.60.0"
   },
   "dependencies": {
-    "chalk": "^4.1.2"
+    "picocolors": "^1.1.1"
   }
 }

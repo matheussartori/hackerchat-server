@@ -1,10 +1,10 @@
-import { EventTypes } from '../events/Events'
-import type * as Types from '../@types/controllers/SocketControllerTypes'
-import { type SocketMessage } from '../@types/server/SocketServerTypes'
-import chalk from 'chalk'
+import { EventTypes } from '../events/Events.js'
+import type * as Types from '../@types/controllers/SocketControllerTypes.js'
+import { type SocketMessage } from '../@types/server/SocketServerTypes.js'
+import pc from 'picocolors'
 
-const log = (...text: any): void => { console.log(chalk.green('[Socket Controller]'), ...text) }
-const error = (...text: any): void => { console.error(chalk.yellow('[Socket Controller]'), [...text]) }
+const log = (...text: unknown[]): void => { console.log(pc.green('[Socket Controller]'), ...text) }
+const error = (...text: unknown[]): void => { console.error(pc.yellow('[Socket Controller]'), ...text) }
 
 export default class Controller {
   public socketServer
@@ -12,20 +12,10 @@ export default class Controller {
   private readonly users = new Map()
   private readonly rooms = new Map()
 
-  /**
-   * Controller constructor.
-   *
-   * @param {{ socketServer: string }} params
-   */
   constructor ({ socketServer }: Types.SocketServerInstance) {
     this.socketServer = socketServer
   }
 
-  /**
-   * On connection created event handler.
-   *
-   * @param {Http.Server} socket
-   */
   onConnectionCreated (socket: NodeJS.Socket & { id: string }): void {
     const { id } = socket
     log('Connection stablished with', id)
@@ -37,13 +27,6 @@ export default class Controller {
     socket.on('end', this.onSocketClosed(id))
   }
 
-  /**
-   * Handles the join room event.
-   *
-   * @param {string} socketId
-   * @param {Types.User} data
-   * @returns {Promise<void>}
-   */
   async joinRoom (socketId: string, data: Types.User): Promise<void> {
     const userData = data
     log(`${userData.userName} joined [${socketId}]`)
@@ -70,11 +53,6 @@ export default class Controller {
     })
   }
 
-  /**
-   * Send the message to all users/sockets.
-   *
-   * @param {Types.Broadcast} broadcast
-   */
   broadcast ({
     socketId,
     roomId,
@@ -90,12 +68,6 @@ export default class Controller {
     }
   }
 
-  /**
-   * Handle the message send event.
-   *
-   * @param {string} socketId
-   * @param {string} message
-   */
   message (socketId: string, message: string): void {
     const { userName, roomId } = this.users.get(socketId)
 
@@ -108,13 +80,6 @@ export default class Controller {
     })
   }
 
-  /**
-   * Updates the room with new users.
-   *
-   * @param {string} roomId
-   * @param {object} user
-   * @returns
-   */
   private joinUserOnRoom (roomId: string, user: Types.User): [] {
     const usersOnRoom = this.rooms.get(roomId) ?? new Map()
     usersOnRoom.set(user.id, user)
@@ -123,30 +88,17 @@ export default class Controller {
     return usersOnRoom
   }
 
-  /**
-   * Socket data handler.
-   *
-   * @param {string} id
-   * @returns {(data: string) => void}
-   */
   private onSocketData (id: string): (data: string) => void {
     return (data: string) => {
       try {
-        const { event, message } = JSON.parse(data);
-        (this as any)[event](id, message)
-      } catch (err) {
+        const { event, message } = JSON.parse(data) as { event: string, message: unknown };
+        (this as unknown as Record<string, (id: string, msg: unknown) => void>)[event](id, message)
+      } catch {
         error('Wrong event format.', data.toString())
       }
     }
   }
 
-  /**
-   * Logout the user from the specific room.
-   *
-   * @param {string} id
-   * @param {string} roomId
-   * @returns {void}
-   */
   private logoutUser (id: string, roomId: string): void {
     this.users.delete(id)
     const usersOnRoom = this.rooms.get(roomId)
@@ -155,14 +107,8 @@ export default class Controller {
     this.rooms.set(roomId, usersOnRoom)
   }
 
-  /**
-   * Handle the socket end.
-   *
-   * @param {string} id
-   * @returns {(_: Promise<void>) => void}
-   */
-  private onSocketClosed (id: string): (_: Promise<void>) => void {
-    return (_: Promise<void>) => {
+  private onSocketClosed (id: string): () => void {
+    return () => {
       const { userName, roomId } = this.users.get(id)
       log(userName, 'disconnected', id)
       this.logoutUser(id, roomId as string)
@@ -176,13 +122,6 @@ export default class Controller {
     }
   }
 
-  /**
-   * Update the user data.
-   *
-   * @param {string} socketId
-   * @param {Types.User} userData
-   * @returns {Types.User} updatedUserData
-   */
   private updateGlobalUserData (
     socketId: string,
     userData: Types.User
