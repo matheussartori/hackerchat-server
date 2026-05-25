@@ -5,13 +5,13 @@
   "type": "module",
   "main": "dist/index.js",
   "scripts": {
-    "build": "tsc",
+    "build": "tsup src/index.ts --format esm --out-dir dist",
     "start": "node dist/index.js",
     "dev": "tsx watch src/index.ts",
     "lint": "eslint src/"
   },
   "engines": {
-    "node": ">=20"
+    "node": ">=24"
   },
   "keywords": [
     "chat",
@@ -28,6 +28,7 @@
     "eslint": "^10.4.0",
     "eslint-plugin-n": "^18.0.1",
     "eslint-plugin-promise": "^7.3.0",
+    "tsup": "^8.5.1",
     "tsx": "^4.22.3",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.60.0"
