@@ -17,6 +17,7 @@
   <a href="#running-locally">Running Locally</a> ·
   <a href="#deploying-a-server">Deploying a Server</a> ·
   <a href="#websocket-protocol">WebSocket Protocol</a> ·
+  <a href="#public-test-server">Public Test Server</a> ·
   <a href="#related-projects">Related Projects</a>
 </p>
 
@@ -187,6 +188,16 @@ server → room     {"event":"newUserConnected","message":{"id":"...","userName"
 client → server   {"event":"message","message":"Hello, world!"}
 server → room     {"event":"message","message":{"userName":"alice","message":"Hello, world!"}}
 ```
+
+## Public Test Server
+
+A public instance is available for testing at:
+
+```
+ws://hackerchatserver.mattsartori.com.br
+```
+
+You can connect directly without running the server locally. No setup required — just point your client at that address.
 
 ## Related Projects
 
