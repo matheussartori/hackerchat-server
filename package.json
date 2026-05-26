@@ -7,7 +7,7 @@
   "scripts": {
     "build": "tsup src/index.ts --format esm --out-dir dist",
     "start": "node --env-file-if-exists .env dist/index.js",
-    "dev": "tsx --env-file-if-exists .env watch src/index.ts",
+    "dev": "tsx watch --env-file-if-exists .env src/index.ts",
     "test:ci": "vitest run",
     "test:watch": "vitest",
     "lint": "eslint src/",
