@@ -1,5 +1,5 @@
-import { ChatRoom } from './ChatRoom.js'
-import { Events } from '../events/Events.js'
+import { ChatRoom } from './chat-room.js'
+import { Events } from '../events/events.js'
 import { createLogger } from '../logger/logger.js'
 import type { ChatUser, JoinRoomPayload } from '../types/chat.js'
 import type { ISocketServer } from '../types/server.js'

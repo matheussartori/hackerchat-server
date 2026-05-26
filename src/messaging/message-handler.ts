@@ -1,7 +1,7 @@
-import { parseMessage, MessageParseError } from './MessageParser.js'
-import { Events } from '../events/Events.js'
+import { parseMessage, MessageParseError } from './message-parser.js'
+import { Events } from '../events/events.js'
 import { createLogger } from '../logger/logger.js'
-import type { ChatService } from '../chat/ChatService.js'
+import type { ChatService } from '../chat/chat-service.js'
 import type { JoinRoomPayload } from '../types/chat.js'
 
 const log = createLogger('MessageHandler')

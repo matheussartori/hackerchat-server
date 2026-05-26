@@ -1,7 +1,7 @@
 import { env } from './env.js'
-import { SocketServer, decodeFrame } from './server/SocketServer.js'
-import { ChatService } from './chat/ChatService.js'
-import { MessageHandler } from './messaging/MessageHandler.js'
+import { SocketServer, decodeFrame } from './server/socket-server.js'
+import { ChatService } from './chat/chat-service.js'
+import { MessageHandler } from './messaging/message-handler.js'
 import { createLogger } from './logger/logger.js'
 
 const log = createLogger('App')
