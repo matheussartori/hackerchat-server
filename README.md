@@ -194,7 +194,7 @@ server → room     {"event":"message","message":{"userName":"alice","message":"
 A public instance is available for testing at:
 
 ```
-ws://hackerchatserver.mattsartori.com.br
+wss://hackerchatserver.mattsartori.com.br
 ```
 
 You can connect directly without running the server locally. No setup required — just point your client at that address.
