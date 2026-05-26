@@ -1,5 +1,5 @@
 import http from 'node:http'
-import { randomUUID } from 'node:crypto'
+import { randomUUID, createHash } from 'node:crypto'
 import { createLogger } from '../logger/logger.js'
 import type { ISocketServer, SocketServerSettings } from '../types/server.js'
 
@@ -28,12 +28,18 @@ export class SocketServer implements ISocketServer {
       res.end('Hacker chat server is running!\n\nPlease connect with websocket protocol.')
     })
 
-    server.on('upgrade', (_req, socket: NodeJS.Socket & { id?: string }) => {
+    server.on('upgrade', (req, socket: NodeJS.Socket & { id?: string }) => {
+      const key = req.headers['sec-websocket-key'] as string
+      const acceptKey = createHash('sha1')
+        .update(key + '258EAFA5-E914-47DA-95CA-C5AB0DC85B11')
+        .digest('base64')
+
       socket.id = randomUUID()
       socket.write(
-        'HTTP/1.1 101 Web Socket Protocol Handshake\r\n' +
+        'HTTP/1.1 101 Switching Protocols\r\n' +
         'Upgrade: WebSocket\r\n' +
         'Connection: Upgrade\r\n' +
+        `Sec-WebSocket-Accept: ${acceptKey}\r\n` +
         '\r\n'
       )
       onConnection(socket as ConnectedSocket)
