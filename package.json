@@ -23,7 +23,11 @@
     "messages",
     "websocket"
   ],
-  "author": "Matheus Sartori",
+  "author": {
+    "name": "Matheus Sartori",
+    "email": "ms.sartori@outlook.com.br",
+    "url": "https://github.com/matheussartori"
+  },
   "license": "MIT",
   "devDependencies": {
     "@eslint/js": "^10.0.1",
