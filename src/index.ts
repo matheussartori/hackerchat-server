@@ -1,3 +1,4 @@
+import { env } from './env.js'
 import { SocketServer } from './server/SocketServer.js'
 import { ChatService } from './chat/ChatService.js'
 import { MessageHandler } from './messaging/MessageHandler.js'
@@ -5,9 +6,7 @@ import { createLogger } from './logger/logger.js'
 
 const log = createLogger('App')
 
-const port = process.env.PORT !== undefined ? Number(process.env.PORT) : 9898
-
-const socketServer = new SocketServer({ port })
+const socketServer = new SocketServer({ port: env.PORT })
 const chatService = new ChatService(socketServer)
 const messageHandler = new MessageHandler(chatService)
 

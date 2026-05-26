@@ -1,4 +1,5 @@
 import pino from 'pino'
+import { env } from '../env.js'
 
 const LEVEL_MAP: Record<string, string> = {
   debug: 'debug',
@@ -7,10 +8,7 @@ const LEVEL_MAP: Record<string, string> = {
   error: 'error',
 }
 
-const rawLevel = process.env.LOG_LEVEL ?? 'info'
-const pinoLevel = LEVEL_MAP[rawLevel] ?? 'info'
-
-const root = pino({ level: pinoLevel })
+const root = pino({ level: LEVEL_MAP[env.LOG_LEVEL] })
 
 export interface Logger {
   debug: (...args: unknown[]) => void

@@ -33,8 +33,8 @@ It is completely **client-agnostic** — any interface that speaks WebSockets ca
 - Room-based real-time messaging
 - Multiple concurrent rooms and users
 - JSON-framed message protocol
-- Zero runtime dependencies beyond logging (`pino`)
 - Structured logging via `pino`
+- Environment validation via `zod` with fail-fast startup errors
 - Full TypeScript source
 
 ## Prerequisites
@@ -142,12 +142,16 @@ sudo ufw reload
 | Variable | Default | Description |
 |---|---|---|
 | `PORT` | `9898` | TCP port the server listens on |
+| `LOG_LEVEL` | `error` | Minimum log level. Accepted values: `debug`, `info`, `warning`, `error` |
 
 You can place these in a `.env` file at the project root — the server loads it automatically via Node's `--env-file-if-exists` flag.
 
 ```env
 PORT=9898
+LOG_LEVEL=error
 ```
+
+Environment variables are validated at startup using [Zod](https://zod.dev). If a variable has an invalid value the server prints the offending fields and exits with a non-zero code before any connection is accepted.
 
 ## WebSocket Protocol
 
