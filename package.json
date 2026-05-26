@@ -6,8 +6,10 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "tsup src/index.ts --format esm --out-dir dist",
-    "start": "node dist/index.js",
-    "dev": "tsx watch src/index.ts",
+    "start": "node --env-file-if-exists .env dist/index.js",
+    "dev": "tsx --env-file-if-exists .env watch src/index.ts",
+    "test:ci": "vitest run",
+    "test:watch": "vitest",
     "lint": "eslint src/",
     "lint:fix": "eslint src/ --fix"
   },
@@ -32,9 +34,11 @@
     "tsup": "^8.5.1",
     "tsx": "^4.22.3",
     "typescript": "^6.0.3",
-    "typescript-eslint": "^8.60.0"
+    "typescript-eslint": "^8.60.0",
+    "vitest": "^4.1.7"
   },
   "dependencies": {
-    "picocolors": "^1.1.1"
+    "picocolors": "^1.1.1",
+    "pino": "^10.3.1"
   }
 }
