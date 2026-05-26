@@ -202,6 +202,7 @@ You can connect directly without running the server locally. No setup required �
 ## Related Projects
 
 - [hackerchat-terminal-client](https://github.com/matheussartori/hackerchat-terminal-client) — A terminal-based client for Hackerchat Server
+- [hackerchat-js-sdk](https://github.com/matheussartori/hackerchat-js-sdk) — JavaScript/TypeScript SDK with framework-agnostic client and React bindings
 
 ## License
 
