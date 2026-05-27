@@ -27,6 +27,7 @@ socketServer.start((socket) => {
     log.info('SIGTERM received, shutting down gracefully')
     server.close(() => { process.exit(0) })
   })
+  return server
 }).catch((err: unknown) => {
   log.error('Failed to start server:', err instanceof Error ? err : new Error(String(err)))
   process.exit(1)
