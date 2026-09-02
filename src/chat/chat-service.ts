@@ -22,6 +22,13 @@ export class ChatService {
     if (user === undefined) return
 
     const { userName, roomId } = payload
+
+    // Leaving the previous room first. Without this the old room keeps the user
+    // in its roster forever and goes on delivering its messages to this socket.
+    if (user.roomId !== '' && user.roomId !== roomId) {
+      this.leaveRoom(user.roomId, socketId, user.userName)
+    }
+
     const updatedUser: ChatUser = { ...user, userName, roomId }
     this.users.set(socketId, updatedUser)
 
@@ -62,14 +69,28 @@ export class ChatService {
 
     if (!roomId) return
 
+    this.leaveRoom(roomId, socketId, userName)
+  }
+
+  /**
+   * Drop a user from a room, tell whoever is left, and forget the room once it
+   * empties out so the room map does not grow without bound.
+   */
+  private leaveRoom(roomId: string, socketId: string, userName: string): void {
     const room = this.rooms.get(roomId)
-    room?.removeUser(socketId)
+    if (room === undefined) return
+
+    if (!room.removeUser(socketId)) return
 
     this.broadcast({
       roomId,
       event: Events.DISCONNECT_USER,
       message: { id: socketId, userName },
     })
+
+    if (room.isEmpty()) {
+      this.rooms.delete(roomId)
+    }
   }
 
   private broadcast({

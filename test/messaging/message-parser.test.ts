@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { parseMessage, MessageParseError } from '../../src/messaging/MessageParser.js'
+import { parseMessage, MessageParseError } from '../../src/messaging/message-parser.js'
 
 describe('parseMessage', () => {
   it('parses a valid message with string payload', () => {

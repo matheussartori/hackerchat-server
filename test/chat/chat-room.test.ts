@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest'
-import { ChatRoom } from '../../src/chat/ChatRoom.js'
+import { ChatRoom } from '../../src/chat/chat-room.js'
 import type { ChatUser } from '../../src/types/chat.js'
 import { createMockSocket } from '../helpers.js'
 

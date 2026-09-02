@@ -16,7 +16,9 @@ export default tseslint.config(
     },
   },
   {
-    files: ['eslint.config.js'],
+    // Config and test files are not part of the published output, so they may
+    // import devDependencies.
+    files: ['eslint.config.js', 'vitest.config.ts', 'test/**/*.ts'],
     rules: {
       'n/no-unpublished-import': 'off',
     },

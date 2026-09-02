@@ -1,0 +1,59 @@
+# Production.
+#
+#   docker compose -f compose.prod.yaml up -d --build
+#   docker compose -f compose.prod.yaml logs -f
+#   docker compose -f compose.prod.yaml down
+#
+# To run a prebuilt image from a registry instead of building on the host, set
+# IMAGE and drop the `build` key:
+#
+#   IMAGE=ghcr.io/matheussartori/hackerchat-server:1.0.0 \
+#     docker compose -f compose.prod.yaml up -d
+
+services:
+  server:
+    build:
+      context: .
+      target: prod
+    image: ${IMAGE:-hackerchat-server:latest}
+    container_name: hackerchat-server
+    restart: always
+    # Bind to localhost only when a reverse proxy (nginx, Caddy, Traefik)
+    # terminates TLS in front. Drop the 127.0.0.1 prefix to expose it directly.
+    ports:
+      - "127.0.0.1:${PORT:-9898}:9898"
+    environment:
+      NODE_ENV: production
+      PORT: 9898
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:9898/healthz').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 3s
+      start_period: 5s
+      retries: 3
+    # On SIGTERM the server sends every client a 1001 close frame and hangs up,
+    # so shutdown normally finishes in well under a second. This window only
+    # covers a client that ignores the close frame; the server destroys those
+    # sockets after 2s of its own.
+    stop_grace_period: 15s
+    # Chat state lives in memory; nothing on disk needs to be writable.
+    read_only: true
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 512M
+        reservations:
+          memory: 128M
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"

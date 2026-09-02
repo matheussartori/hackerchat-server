@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { MessageHandler } from '../../src/messaging/MessageHandler.js'
-import type { ChatService } from '../../src/chat/ChatService.js'
+import { MessageHandler } from '../../src/messaging/message-handler.js'
+import type { ChatService } from '../../src/chat/chat-service.js'
 
 function createMockChatService(): ChatService {
   return {

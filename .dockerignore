@@ -1,0 +1,25 @@
+# Everything the image never needs. Keeping this tight also keeps the build
+# context small, so `docker build` does not ship node_modules to the daemon.
+node_modules
+dist
+coverage
+test
+
+.git
+.github
+.gitignore
+.editorconfig
+
+.env
+.env.*
+!.env.example
+
+Dockerfile
+.dockerignore
+compose.yaml
+compose.prod.yaml
+
+*.md
+!README.md
+*.log
+.DS_Store
