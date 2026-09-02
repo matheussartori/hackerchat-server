@@ -1,7 +1,7 @@
 <h1 align="center">Hackerchat Server</h1>
 
 <p align="center">
-  A lightweight, client-agnostic WebSocket chat server built with Node.js and TypeScript.
+  A client-agnostic WebSocket chat server built with Node.js and TypeScript.
 </p>
 
 <p align="center">
@@ -13,11 +13,12 @@
 <p align="center">
   <a href="#overview">Overview</a> ·
   <a href="#features">Features</a> ·
-  <a href="#prerequisites">Prerequisites</a> ·
+  <a href="#requirements">Requirements</a> ·
   <a href="#running-locally">Running Locally</a> ·
-  <a href="#deploying-a-server">Deploying a Server</a> ·
+  <a href="#configuration">Configuration</a> ·
   <a href="#websocket-protocol">WebSocket Protocol</a> ·
-  <a href="#public-test-server">Public Test Server</a> ·
+  <a href="#deploying">Deploying</a> ·
+  <a href="#development">Development</a> ·
   <a href="#related-projects">Related Projects</a>
 </p>
 
@@ -25,23 +26,26 @@
 
 ## Overview
 
-Hackerchat Server is an HTTP service that handles WebSocket upgrades, allowing users to create and join rooms to exchange messages in real time.
+Hackerchat Server is an HTTP server that upgrades incoming connections to WebSocket and routes chat messages between users grouped into rooms. A room is created the moment its first user joins and is discarded once the last one leaves. All state lives in memory, so there is no database to provision.
 
-It is completely **client-agnostic** — any interface that speaks WebSockets can connect to it: web apps, mobile apps, desktop clients, or terminal clients. The server is responsible solely for backend communication and does not ship with a frontend.
+The server is client-agnostic: anything that speaks WebSocket can connect to it, whether that is a browser app, a mobile app, a desktop app or a terminal client. It ships no frontend of its own.
 
 ## Features
 
-- Room-based real-time messaging
-- Multiple concurrent rooms and users
-- JSON-framed message protocol
-- Structured logging via `pino`
-- Environment validation via `zod` with fail-fast startup errors
-- Full TypeScript source
+- Room-based messaging, with rooms created on demand and dropped when they empty out
+- RFC 6455 framing implemented in the project itself, so there is no WebSocket library in the runtime dependencies
+- JSON protocol: one object per WebSocket text frame
+- Incoming payloads capped at 1 MiB, with oversized frames closed under code `1009`
+- Graceful shutdown: on `SIGTERM`/`SIGINT` every client receives a close frame before the process exits
+- `/healthz` endpoint for load balancers and container health checks
+- Structured logging with `pino`
+- Environment variables parsed and validated with `zod` at startup
+- Docker images and Compose files for local development and production
+- Written in TypeScript
 
-## Prerequisites
+## Requirements
 
-- **Node.js** `>= 24`
-- **npm** `>= 10`
+Node.js `24` or newer. The bundled npm (`10` or newer) is enough; no other tooling is required.
 
 ## Running Locally
 
@@ -64,119 +68,85 @@ npm install
 npm run dev
 ```
 
-The server starts on port **9898** by default. To use a different port, set the `PORT` environment variable:
+The server listens on port **9898** by default. Pass `PORT` to change it:
 
 ```bash
 PORT=3000 npm run dev
 ```
 
-> The dev server uses `tsx` for on-the-fly TypeScript execution and restarts automatically on file changes.
+The dev script runs the TypeScript sources through `tsx` and restarts on every file change, so there is no build step in the loop.
 
-**Other useful commands**
-
-| Command | Description |
-|---|---|
-| `npm run build` | Compile TypeScript to `dist/` via `tsup` |
-| `npm start` | Run the compiled build |
-| `npm run test:ci` | Run tests once |
-| `npm run test:watch` | Run tests in watch mode |
-| `npm run lint` | Lint the source with ESLint |
-| `npm run lint:fix` | Lint and auto-fix |
-
-## Deploying a Server
-
-The following steps describe how to deploy Hackerchat Server on a Linux VPS (Ubuntu/Debian). The same approach applies to any cloud instance (AWS EC2, DigitalOcean Droplet, etc.).
-
-### 1. Install Node.js
+To confirm the server is up:
 
 ```bash
-curl -fsSL https://deb.nodesource.com/setup_24.x | sudo -E bash -
-sudo apt-get install -y nodejs
-node --version  # should print v24.x.x or higher
-```
-
-### 2. Clone and build
-
-```bash
-git clone https://github.com/matheussartori/hackerchat-server.git
-cd hackerchat-server
-npm install
-npm run build
-```
-
-### 3. Start the server
-
-```bash
-PORT=9898 npm start
-```
-
-To verify the server is running, open a browser or use `curl`:
-
-```bash
-curl http://your-server-ip:9898
+curl http://localhost:9898
 # Hacker chat server is running!
+#
 # Please connect with websocket protocol.
 ```
 
-### 4. Keep it running with a process manager
+### With Docker
 
-Install [PM2](https://pm2.keymetrics.io) to keep the process alive across crashes and reboots:
-
-```bash
-npm install -g pm2
-PORT=9898 pm2 start dist/index.js --name hackerchat
-pm2 save
-pm2 startup  # follow the printed instruction to enable autostart
-```
-
-### 5. Open the firewall port
+If you would rather not install Node.js locally, the Compose file builds a development image with the source bind-mounted, so `tsx watch` still reloads on save:
 
 ```bash
-sudo ufw allow 9898/tcp
-sudo ufw reload
+docker compose up          # build and run
+docker compose up --build  # rebuild after a dependency change
+docker compose down        # stop and clean up
 ```
 
-> If you are behind a cloud provider's security group (AWS, GCP, Azure), also add an inbound rule for TCP port 9898.
-
-### Environment variables
+## Configuration
 
 | Variable | Default | Description |
 |---|---|---|
 | `PORT` | `9898` | TCP port the server listens on |
-| `LOG_LEVEL` | `error` | Minimum log level. Accepted values: `debug`, `info`, `warning`, `error` |
+| `LOG_LEVEL` | `error` | Minimum log level: `debug`, `info`, `warning` or `error` |
 
-You can place these in a `.env` file at the project root — the server loads it automatically via Node's `--env-file-if-exists` flag.
+Log levels, from most to least verbose:
+
+- `debug` — every message as it passes through the server
+- `info` — connections, joins and disconnections
+- `warning` — unexpected events and recoverable issues
+- `error` — failures only
+
+Both variables can live in a `.env` file at the project root. The `dev` and `start` scripts load it through Node's `--env-file-if-exists` flag, and `.env.example` is there to copy from:
 
 ```env
 PORT=9898
-LOG_LEVEL=error
+LOG_LEVEL=info
 ```
 
-Environment variables are validated at startup using [Zod](https://zod.dev). If a variable has an invalid value the server prints the offending fields and exits with a non-zero code before any connection is accepted.
+Values are validated with [Zod](https://zod.dev) while the config module is being evaluated, which happens before anything else in the process runs. An invalid value raises `InvalidEnvironmentError` listing the offending fields, and the server never reaches the point of accepting connections.
 
 ## WebSocket Protocol
 
-All messages are newline-delimited JSON objects with the shape:
+Every message is a JSON object carried in a single WebSocket text frame:
 
 ```json
 { "event": "<event-name>", "message": <payload> }
 ```
 
-### Client → Server events
+Frames whose payload is not valid JSON, or that carry no `event` string, are logged and discarded. The connection stays open.
+
+### Client → Server
 
 | Event | Payload | Description |
 |---|---|---|
-| `joinRoom` | `{ "userName": string, "roomId": string }` | Join or create a room |
-| `message` | `string` | Broadcast a chat message to the current room |
+| `joinRoom` | `{ "userName": string, "roomId": string }` | Join a room, creating it if it does not exist yet |
+| `message` | `string` | Send a chat message to the room the sender is currently in |
 
-### Server → Client events
+Sending `joinRoom` again on the same connection moves the user to another room: the server removes them from the old one, announces the departure there, and announces the arrival in the new one.
+
+### Server → Client
 
 | Event | Payload | Description |
 |---|---|---|
-| `updateUsers` | `Array<{ id: string, userName: string }>` | Full user list sent to a client on join |
-| `newUserConnected` | `{ id: string, userName: string }` | Emitted to the room when a new user joins |
-| `message` | `{ userName: string, message: string }` | A chat message from another user |
-| `disconnectUser` | `{ id: string, userName: string }` | Emitted to the room when a user disconnects |
+| `updateUsers` | `Array<{ id: string, userName: string }>` | The room roster, sent only to the user who just joined |
+| `newUserConnected` | `{ id: string, userName: string }` | Broadcast to the room when someone joins |
+| `message` | `{ userName: string, message: string }` | A chat message, broadcast to the whole room |
+| `disconnectUser` | `{ id: string, userName: string }` | Broadcast to the room when someone leaves or disconnects |
+
+Broadcasts reach every member of the room, the sender included. A client that echoes its own messages locally will otherwise show them twice.
 
 ### Example flow
 
@@ -189,20 +159,97 @@ client → server   {"event":"message","message":"Hello, world!"}
 server → room     {"event":"message","message":{"userName":"alice","message":"Hello, world!"}}
 ```
 
-## Public Test Server
+### HTTP endpoints
 
-A public instance is available for testing at:
+| Path | Response |
+|---|---|
+| `/healthz` | `200 OK` once the server is accepting connections |
+| anything else | `200` with a plain-text notice pointing at the WebSocket protocol |
 
+Both answers carry permissive CORS headers, so a browser client hosted anywhere can reach the server.
+
+## Deploying
+
+The server speaks plain HTTP, so put a reverse proxy (nginx, Caddy, Traefik) in front of it to terminate TLS and let clients connect over `wss://`.
+
+### With Docker Compose
+
+`compose.prod.yaml` builds the production image and runs it as a non-root user with a read-only filesystem, dropped capabilities and rotating logs:
+
+```bash
+docker compose -f compose.prod.yaml up -d --build
+docker compose -f compose.prod.yaml logs -f
+docker compose -f compose.prod.yaml down
 ```
-wss://hackerchatserver.mattsartori.com.br
+
+The container is published on `127.0.0.1` only, which assumes a reverse proxy on the same host. Drop that prefix from the `ports` entry to expose it directly.
+
+To run a prebuilt image instead of building on the host, set `IMAGE` and remove the `build` key:
+
+```bash
+IMAGE=ghcr.io/matheussartori/hackerchat-server:1.0.0 \
+  docker compose -f compose.prod.yaml up -d
 ```
 
-You can connect directly without running the server locally. No setup required — just point your client at that address.
+### Without Docker
+
+On a Linux VPS (Ubuntu or Debian, though any cloud instance works the same way):
+
+**1. Install Node.js**
+
+```bash
+curl -fsSL https://deb.nodesource.com/setup_24.x | sudo -E bash -
+sudo apt-get install -y nodejs
+node --version  # v24.x.x or newer
+```
+
+**2. Clone and build**
+
+```bash
+git clone https://github.com/matheussartori/hackerchat-server.git
+cd hackerchat-server
+npm ci
+npm run build
+```
+
+**3. Keep the process alive with PM2**
+
+```bash
+npm install -g pm2
+PORT=9898 pm2 start dist/index.js --name hackerchat
+pm2 save
+pm2 startup  # then follow the printed instruction to enable autostart
+```
+
+**4. Open the port**
+
+```bash
+sudo ufw allow 9898/tcp
+sudo ufw reload
+```
+
+Behind a cloud provider's security group (AWS, GCP, Azure), add the matching inbound rule for TCP `9898` as well.
+
+## Development
+
+| Command | Description |
+|---|---|
+| `npm run dev` | Start the server with `tsx` and reload on change |
+| `npm run build` | Compile TypeScript to `dist/` with `tsup` |
+| `npm start` | Run the compiled build |
+| `npm run typecheck` | Type-check without emitting |
+| `npm run lint` | Lint `src` and `test` with ESLint |
+| `npm run lint:fix` | Lint and apply the fixes it can |
+| `npm run test:ci` | Run the test suite once |
+| `npm run test:watch` | Run the tests in watch mode |
+| `npm run test:coverage` | Run the tests and write a coverage report |
+
+CI runs lint, typecheck, tests with coverage, the build and `npm audit` on Node 24 and 26.
 
 ## Related Projects
 
-- [hackerchat-terminal-client](https://github.com/matheussartori/hackerchat-terminal-client) — A terminal-based client for Hackerchat Server
-- [hackerchat-js-sdk](https://github.com/matheussartori/hackerchat-js-sdk) — JavaScript/TypeScript SDK with framework-agnostic client and React bindings
+- [hackerchat-terminal-client](https://github.com/matheussartori/hackerchat-terminal-client) — Terminal client for Hackerchat Server
+- [hackerchat-js-sdk](https://github.com/matheussartori/hackerchat-js-sdk) — JavaScript/TypeScript SDK with a framework-agnostic client and React bindings
 
 ## License
 
