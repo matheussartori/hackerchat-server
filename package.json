@@ -1,6 +1,6 @@
 {
   "name": "hackerchat-server",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Chat service built using websockets, designed to accommodate clients connecting from various client types.",
   "type": "module",
   "main": "dist/index.js",
