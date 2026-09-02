@@ -5,14 +5,25 @@ const envSchema = z.object({
   LOG_LEVEL: z.enum(['debug', 'info', 'warning', 'error']).default('error'),
 })
 
+/**
+ * Raised while this module is being evaluated, which means before any importer
+ * has had a chance to run. Nothing can catch it: a misconfigured process has no
+ * useful work to do, so failing the import is the point.
+ */
+export class InvalidEnvironmentError extends Error {
+  constructor(issues: string[]) {
+    super(`Invalid environment variables:\n${issues.map(issue => `  ${issue}`).join('\n')}`)
+    this.name = 'InvalidEnvironmentError'
+  }
+}
+
 const result = envSchema.safeParse(process.env)
 
 if (!result.success) {
-  console.error('Invalid environment variables:')
-  for (const [key, messages] of Object.entries(result.error.flatten().fieldErrors)) {
-    console.error(`  ${key}: ${messages?.join(', ')}`)
-  }
-  process.exit(1)
+  throw new InvalidEnvironmentError(
+    Object.entries(result.error.flatten().fieldErrors)
+      .map(([key, messages]) => `${key}: ${messages?.join(', ') ?? 'invalid'}`)
+  )
 }
 
 export const env = result.data

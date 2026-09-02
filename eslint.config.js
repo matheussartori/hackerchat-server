@@ -11,7 +11,8 @@ export default tseslint.config(
   pluginPromise.configs['flat/recommended'],
   {
     rules: {
-      'n/no-process-exit': 'warn',
+      // `n/no-process-exit` stays at the plugin's default (error): nothing here
+      // needs to kill the process, and letting it unwind flushes the logger.
       '@typescript-eslint/no-unsafe-argument': 'off',
     },
   },

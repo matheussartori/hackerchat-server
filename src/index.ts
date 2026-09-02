@@ -78,8 +78,11 @@ function handleConnection(socket: ConnectedSocket): void {
 }
 
 const server = await socketServer.start(handleConnection).catch((err: unknown) => {
-  log.error('Failed to start server:', err instanceof Error ? err : new Error(String(err)))
-  process.exit(1)
+  const error = err instanceof Error ? err : new Error(String(err))
+  log.error('Failed to start server:', error)
+  // Rejecting the top-level await is what stops the process, and it lets the
+  // logger flush on the way out — which `process.exit()` would have cut short.
+  throw error
 })
 
 let shuttingDown = false
@@ -90,11 +93,12 @@ async function shutdown(signal: string): Promise<void> {
   log.info(`${signal} received, shutting down gracefully`)
   try {
     await socketServer.shutdown(server)
-    process.exit(0)
   } catch (err: unknown) {
     log.error('Error during shutdown:', err instanceof Error ? err : new Error(String(err)))
-    process.exit(1)
+    process.exitCode = 1
   }
+  // No forced exit: `shutdown()` leaves nothing holding the event loop open, so
+  // the process ends on its own once the last log line is out.
 }
 
 process.on('SIGTERM', () => { void shutdown('SIGTERM') })
