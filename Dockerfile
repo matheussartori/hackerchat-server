@@ -5,7 +5,7 @@
 #   --target dev   development image: full toolchain, `tsx watch`, source mounted
 #   --target prod  production image (default): dist + runtime deps only, non-root
 #
-ARG NODE_VERSION=24-alpine
+ARG NODE_VERSION=26-alpine
 
 
 # ---------------------------------------------------------------------------

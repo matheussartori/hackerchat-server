@@ -244,7 +244,7 @@ Behind a cloud provider's security group (AWS, GCP, Azure), add the matching inb
 | `npm run test:watch` | Run the tests in watch mode |
 | `npm run test:coverage` | Run the tests and write a coverage report |
 
-CI runs lint, typecheck, tests with coverage, the build and `npm audit` on Node 24 and 26.
+CI runs lint, typecheck, tests with coverage, the build and `npm audit` on Node 26 (LTS).
 
 ## Related Projects
 
