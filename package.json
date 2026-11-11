@@ -33,19 +33,22 @@
   "license": "MIT",
   "devDependencies": {
     "@eslint/js": "^10.0.1",
-    "@types/node": "^26.4.1",
-    "@vitest/coverage-v8": "^4.1.11",
-    "eslint": "^10.9.1",
-    "eslint-plugin-n": "^18.3.0",
+    "@types/node": "^26.6.6",
+    "@vitest/coverage-v8": "^5.1.0",
+    "eslint": "^10.14.0",
+    "eslint-plugin-n": "^18.5.0",
     "eslint-plugin-promise": "^7.3.0",
-    "tsup": "^8.5.1",
-    "tsx": "^4.23.13",
+    "tsup": "^9.0.0",
+    "tsx": "^4.23.15",
     "typescript": "^6.0.3",
-    "typescript-eslint": "^8.69.0",
-    "vitest": "^4.1.11"
+    "typescript-eslint": "^8.72.2",
+    "vitest": "^5.1.0"
   },
   "dependencies": {
-    "pino": "^10.3.1",
-    "zod": "^4.5.4"
+    "pino": "^10.4.0",
+    "zod": "^4.6.7"
+  },
+  "overrides": {
+    "minimatch@^10": "^11.0.8"
   }
 }
